@@ -1,0 +1,8 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.noblanklinks.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": ["RedstoneLinkNetworkHandlerMixin"],
+  "injectors": { "defaultRequire": 1 }
+}

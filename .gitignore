@@ -1,0 +1,6 @@
+.gradle/
+build/
+run/
+tools/logs/
+__pycache__/
+.DS_Store
