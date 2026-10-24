@@ -72,18 +72,17 @@ jobs:
 
       - name: Already published?
         id: done
-        if: github.event_name == 'release'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JAR: ${{ steps.jar.outputs.name }}
         run: |
           if gh release view "$TAG" --json assets --jq '.assets[].name' | grep -qxF "$JAR"; then
-            echo "::warning::release $TAG already carries $JAR: nothing published. Expected after editing a release or attaching the jar by hand; to publish to CurseForge/Modrinth anyway, run this workflow by hand with the tag."
+            echo "::warning::release $TAG already carries $JAR: the GitHub asset is kept. A release event publishes nothing; a manual run still publishes the CI build to CurseForge/Modrinth."
             echo "skip=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Release notes
-        if: steps.done.outputs.skip != 'true'
+        if: steps.done.outputs.skip != 'true' || github.event_name == 'workflow_dispatch'
         env:
           VER: ${{ steps.tag.outputs.version }}
         run: |
@@ -104,7 +103,7 @@ jobs:
           github-generate-changelog: false
 
       - name: CurseForge and Modrinth
-        if: steps.done.outputs.skip != 'true' && (env.CURSEFORGE_TOKEN != '' || env.MODRINTH_TOKEN != '')
+        if: (steps.done.outputs.skip != 'true' || github.event_name == 'workflow_dispatch') && (env.CURSEFORGE_TOKEN != '' || env.MODRINTH_TOKEN != '')
         uses: Kir-Antipov/mc-publish@52307b03863581dec6b652b83e597aec02ebb075 # v3.3
         with:
           files: ${{ steps.jar.outputs.path }}
@@ -126,6 +125,6 @@ jobs:
           curseforge-token: ${{ env.CURSEFORGE_TOKEN }}
 
       - name: Skipped CurseForge and Modrinth
-        if: steps.done.outputs.skip != 'true' && env.CURSEFORGE_TOKEN == '' && env.MODRINTH_TOKEN == ''
+        if: (steps.done.outputs.skip != 'true' || github.event_name == 'workflow_dispatch') && env.CURSEFORGE_TOKEN == '' && env.MODRINTH_TOKEN == ''
         run: |
           echo "::notice::no CURSEFORGE_TOKEN or MODRINTH_TOKEN secret, jar attached to the GitHub release only"

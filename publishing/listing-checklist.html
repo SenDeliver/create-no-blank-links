@@ -85,7 +85,7 @@
 </table>
 
 <h2>After listing: releases are automatic</h2>
-<p><code>.github/workflows/publish.yml</code> runs on every GitHub Release: builds the jar, attaches it to the GitHub release and, when the secrets exist, uploads it to CurseForge and Modrinth. Without secrets it only attaches the jar and prints a notice; it never fails for a missing token. Changelog: <code>publishing/release-notes-&lt;version&gt;.md</code> if it exists, else the <code>## [x.y.z]</code> section of CHANGELOG.md. A release that already carries the jar (attached by hand) is skipped; rerun the workflow by hand with the tag to publish it to the sites.</p>
+<p><code>.github/workflows/publish.yml</code> runs on every GitHub Release: builds the jar, attaches it to the GitHub release and, when the secrets exist, uploads it to CurseForge and Modrinth. Without secrets it only attaches the jar and prints a notice; it never fails for a missing token. Changelog: <code>publishing/release-notes-&lt;version&gt;.md</code> if it exists, else the <code>## [x.y.z]</code> section of CHANGELOG.md. A release that already carries the jar (attached by hand) keeps that asset. A manual run (Actions → Publish → tag) publishes the CI build to the sites but never replaces the GitHub asset. For 1.0.0 the CI build differs from the deployed jar (logo added after the deploy), so upload 1.0.0 by hand on both sites from the GitHub release asset; do not run the workflow for it.</p>
 <pre>git tag v1.0.1 && git push origin main v1.0.1
 gh release create v1.0.1 --title "No Blank Links 1.0.1" --notes-file publishing/release-notes-1.0.1.md</pre>
 
