@@ -127,4 +127,5 @@ jobs:
 
       - name: Skipped CurseForge and Modrinth
         if: steps.done.outputs.skip != 'true' && env.CURSEFORGE_TOKEN == '' && env.MODRINTH_TOKEN == ''
-        run: echo "::notice::no CURSEFORGE_TOKEN or MODRINTH_TOKEN secret: jar attached to the GitHub release only"
+        run: |
+          echo "::notice::no CURSEFORGE_TOKEN or MODRINTH_TOKEN secret, jar attached to the GitHub release only"
