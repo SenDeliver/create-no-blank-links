@@ -1,0 +1,130 @@
+name: Publish
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to (re)publish, e.g. v1.0.1"
+        required: true
+
+env:
+  TAG: ${{ inputs.tag || github.ref_name }}
+  MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+  CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
+  CURSEFORGE_PROJECT_ID: ${{ secrets.CURSEFORGE_PROJECT_ID }}
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    if: github.repository_owner == 'SenDeliver' && github.actor == 'SenDeliver'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Parse tag
+        id: tag
+        run: |
+          if [[ ! "$TAG" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)(\+mc[0-9.]+)?$ ]]; then
+            echo "::error::tag '$TAG' is not v<mod_version>[+mc<minecraft_version>], e.g. v1.0.1"
+            exit 1
+          fi
+          echo "version=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.TAG }}
+
+      - name: Metadata from gradle.properties
+        id: meta
+        env:
+          VER: ${{ steps.tag.outputs.version }}
+        run: |
+          prop() { sed -n "s/^$1=//p" gradle.properties; }
+          v=$(prop mod_version); mc=$(prop minecraft_version); loader=$(prop mod_loader); java=$(prop java_version)
+          [ "$VER" = "$v" ] || { echo "::error::tag $TAG is version $VER, gradle.properties mod_version is $v"; exit 1; }
+          [ -n "$mc" ] && [ -n "$loader" ] && [ -n "$java" ] || { echo "::error::gradle.properties needs minecraft_version, mod_loader and java_version"; exit 1; }
+          grep -q "^## \[$v\]" CHANGELOG.md || { echo "::error::CHANGELOG.md has no [$v] section"; exit 1; }
+          {
+            echo "loader=$loader"
+            echo "java=$java"
+            echo "game_version=$mc"
+            echo "version=$v"
+          } >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: ${{ steps.meta.outputs.java }}
+
+      - uses: gradle/actions/setup-gradle@48b5f213c81028ace310571dc5ec0fbbca0b2947 # v4
+
+      - run: ./gradlew build --no-daemon
+
+      - name: Built jar
+        id: jar
+        run: |
+          jar=$(ls build/libs/*.jar | grep -vE -- '-(sources|javadoc)\.jar$' | head -1)
+          [ -n "$jar" ] || { echo "::error::no jar in build/libs"; exit 1; }
+          echo "path=$jar" >> "$GITHUB_OUTPUT"
+          echo "name=$(basename "$jar")" >> "$GITHUB_OUTPUT"
+
+      - name: Already published?
+        id: done
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JAR: ${{ steps.jar.outputs.name }}
+        run: |
+          if gh release view "$TAG" --json assets --jq '.assets[].name' | grep -qxF "$JAR"; then
+            echo "::warning::release $TAG already carries $JAR: nothing published. Expected after editing a release or attaching the jar by hand; to publish to CurseForge/Modrinth anyway, run this workflow by hand with the tag."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Release notes
+        if: steps.done.outputs.skip != 'true'
+        env:
+          VER: ${{ steps.tag.outputs.version }}
+        run: |
+          if [ -f "publishing/release-notes-$VER.md" ]; then
+            cp "publishing/release-notes-$VER.md" release-notes.md
+          else
+            awk -v v="$VER" '/^## \[/{p = index($0, "## [" v "]") == 1} p' CHANGELOG.md | tail -n +2 > release-notes.md
+          fi
+          cat release-notes.md
+
+      - name: GitHub release asset
+        if: steps.done.outputs.skip != 'true'
+        uses: Kir-Antipov/mc-publish@52307b03863581dec6b652b83e597aec02ebb075 # v3.3
+        with:
+          files: ${{ steps.jar.outputs.path }}
+          github-tag: ${{ env.TAG }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-generate-changelog: false
+
+      - name: CurseForge and Modrinth
+        if: steps.done.outputs.skip != 'true' && (env.CURSEFORGE_TOKEN != '' || env.MODRINTH_TOKEN != '')
+        uses: Kir-Antipov/mc-publish@52307b03863581dec6b652b83e597aec02ebb075 # v3.3
+        with:
+          files: ${{ steps.jar.outputs.path }}
+          name: No Blank Links ${{ steps.meta.outputs.version }}
+          version: ${{ steps.meta.outputs.version }}
+          changelog-file: release-notes.md
+          version-type: release
+          loaders: ${{ steps.meta.outputs.loader }}
+          game-versions: ${{ steps.meta.outputs.game_version }}
+          java: ${{ steps.meta.outputs.java }}
+          dependencies: |
+            create(required)
+
+          modrinth-id: no-blank-links
+          modrinth-token: ${{ env.MODRINTH_TOKEN }}
+          modrinth-featured: true
+
+          curseforge-id: ${{ env.CURSEFORGE_PROJECT_ID }}
+          curseforge-token: ${{ env.CURSEFORGE_TOKEN }}
+
+      - name: Skipped CurseForge and Modrinth
+        if: steps.done.outputs.skip != 'true' && env.CURSEFORGE_TOKEN == '' && env.MODRINTH_TOKEN == ''
+        run: echo "::notice::no CURSEFORGE_TOKEN or MODRINTH_TOKEN secret: jar attached to the GitHub release only"

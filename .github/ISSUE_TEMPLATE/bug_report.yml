@@ -1,0 +1,77 @@
+name: Bug report
+description: Something does not work as expected.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Please check that the bug still happens with the latest version, and that it is not already reported.
+        Remember: with this mod, Redstone Links with no frequency item never carry power. That is by design, not a bug.
+  - type: input
+    id: mod-version
+    attributes:
+      label: No Blank Links version
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: input
+    id: minecraft-version
+    attributes:
+      label: Minecraft version
+      placeholder: "1.21.1"
+    validations:
+      required: true
+  - type: input
+    id: loader-version
+    attributes:
+      label: NeoForge version
+      placeholder: "21.1.250"
+    validations:
+      required: true
+  - type: input
+    id: create-version
+    attributes:
+      label: Create version
+      placeholder: "6.0.10"
+    validations:
+      required: true
+  - type: dropdown
+    id: side
+    attributes:
+      label: Where is the mod installed?
+      options:
+        - Server only
+        - Client and server
+        - Singleplayer
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: other-mods
+    attributes:
+      label: Other mods
+      description: Modpack name, or the other mods you use (Create addons matter most).
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Place a Redstone Link transmitter with an apple in the first slot, power it
+        2. Place a receiver with the same apple 5 blocks away, lamp next to it
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Log or crash report
+      description: |
+        Upload `logs/latest.log` or the file from `crash-reports/`, or paste a link (for example https://mclo.gs).
+        For a server-side problem, use the server's log.

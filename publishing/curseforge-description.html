@@ -1,0 +1,40 @@
+<p><strong>Create Redstone Links with a blank frequency never carry power. One tiny server-side mixin.</strong></p>
+
+<h2>What it does</h2>
+<p>A Redstone Link with <strong>both frequency slots empty</strong> is on the blank channel. In Create that channel is one global network: every powered blank transmitter within link range feeds every blank receiver on the server, whoever placed it.</p>
+<p>With this mod the blank channel is dead:</p>
+<ul>
+<li>a blank receiver always reads 0, whatever blank transmitters are around;</li>
+<li>links with <strong>at least one</strong> frequency item work exactly as before.</li>
+</ul>
+
+<h2>Why</h2>
+<p><a href="https://www.curseforge.com/minecraft/mc-mods/create-propulsion">Create: Propulsion</a> 1.1.5 vector thrusters carry four blank-frequency link receivers and do not refresh their own power after joining the network. One forgotten powered blank Redstone Link anywhere within link range tilts the last-placed thruster. In general, a stray blank transmitter leaks into every blank receiver on the server.</p>
+
+<h2>Behaviour change</h2>
+<p><strong>Blank links stop working.</strong> Any build that relies on two Redstone Links with no frequency item goes dark. Put the same item in a slot of both links (an apple, a dirt block, anything) and it works again. Nothing is saved differently; removing the mod brings the old behaviour back.</p>
+
+<h2>Install</h2>
+<ol>
+<li>NeoForge 1.21.1 and Create 6.0.x in <code>mods/</code>.</li>
+<li>Drop the jar into <code>mods/</code>.</li>
+<li><strong>Server only is enough.</strong> Clients may install it or not. In singleplayer, install it on the client.</li>
+</ol>
+
+<h2>Requirements</h2>
+<table border="1" cellpadding="4">
+<tr><th>Mod</th><th>Version</th></tr>
+<tr><td>Minecraft</td><td>1.21.1</td></tr>
+<tr><td>NeoForge</td><td>21.1+ (tested 21.1.250)</td></tr>
+<tr><td><a href="https://www.curseforge.com/minecraft/mc-mods/create">Create</a></td><td>6.0.7+, below 6.1.0 (tested 6.0.10)</td></tr>
+<tr><td>Java</td><td>21</td></tr>
+</table>
+<p>No blocks, items, config, packets or save-format changes. One mixin on Create's <code>RedstoneLinkNetworkHandler</code>.</p>
+
+<h2>Links</h2>
+<ul>
+<li><a href="https://github.com/SenDeliver/create-no-blank-links">Source</a></li>
+<li><a href="https://github.com/SenDeliver/create-no-blank-links/issues">Issues</a></li>
+<li><a href="https://github.com/SenDeliver/create-no-blank-links/blob/main/CHANGELOG.md">Changelog</a></li>
+</ul>
+<p>MIT License. Built on Create (not bundled). Developed with AI assistance (Claude); design, testing and direction by SenDeliver.</p>

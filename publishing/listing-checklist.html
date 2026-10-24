@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>No Blank Links listing</title>
+<style>
+  :root{--bg:#fff;--fg:#1a1a1a;--muted:#666;--line:#e3e3e3;--accent:#b5562a;--soft:#f8f4f1;--warn:#a15c00}
+  body{margin:0;padding:24px 16px;background:var(--bg);color:var(--fg);font:15px/1.5 -apple-system,Segoe UI,Helvetica,Arial,sans-serif}
+  h1{margin:0 0 4px;font-size:26px}h2{margin:32px 0 10px;font-size:19px;border-bottom:2px solid var(--accent);padding-bottom:4px}
+  .sub{color:var(--muted);margin-bottom:20px}
+  table{width:100%;border-collapse:collapse;margin:8px 0 16px}th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}th{background:var(--soft)}
+  code{background:var(--soft);padding:1px 5px;border-radius:3px;font-size:13px}pre{background:var(--soft);padding:10px;overflow:auto}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:20px}
+  ol li,ul li{margin:4px 0}.tag{display:inline-block;background:var(--accent);color:#fff;border-radius:3px;padding:0 6px;font-size:12px}
+  .ok{color:#0b6e4f;font-weight:600}.weak{color:var(--warn);font-weight:600}
+</style>
+</head>
+<body>
+<h1>Create: No Blank Links, listing kit</h1>
+<div class="sub">Everything prepared for Modrinth + CurseForge. Files in <code>publishing/</code>. First public version: 1.0.0. Status 2026-10-24.</div>
+
+<h2>Shared metadata (paste on both sites)</h2>
+<table>
+<tr><th style="width:200px">Field</th><th>Value</th></tr>
+<tr><td>Name</td><td>Create: No Blank Links</td></tr>
+<tr><td>Slug / URL</td><td><code>no-blank-links</code>. Check it is free on both sites when creating the project. Must match <code>modrinth-id</code> in <code>.github/workflows/publish.yml</code>. If a site gives another slug, change the workflow value and the README links.</td></tr>
+<tr><td>Summary (1 line)</td><td>Create Redstone Links with a blank frequency never carry power. One tiny server-side mixin.</td></tr>
+<tr><td>Categories</td><td>Modrinth: <code>technology</code>, <code>utility</code>. CurseForge: Addons → Create; Server Utility</td></tr>
+<tr><td>License</td><td>MIT</td></tr>
+<tr><td>Side</td><td>Client: optional. Server: required (singleplayer: install on the client).</td></tr>
+<tr><td>Loader / versions</td><td>NeoForge, Minecraft 1.21.1, Java 21</td></tr>
+<tr><td>Icon</td><td><code>publishing/icon-512.png</code> (Modrinth), <code>publishing/icon-400.png</code> (CurseForge)</td></tr>
+<tr><td>Gallery</td><td><code>publishing/screenshots/</code>, see the table below.</td></tr>
+<tr><td>Links</td><td>Source: github.com/SenDeliver/create-no-blank-links · Issues: …/issues · Wiki: …/blob/main/README.md</td></tr>
+<tr><td>Version upload</td><td>File <code>noblanklinks-1.0.0.jar</code> (from the GitHub Release v1.0.0, md5 <code>961267e61f9ad99419729c12b35b413e</code>), version number <code>1.0.0</code>, channel Release, changelog from <code>publishing/release-notes-1.0.0.md</code></td></tr>
+</table>
+
+<h2>Dependencies</h2>
+<table>
+<tr><th>Mod</th><th>Type</th><th>Modrinth</th><th>CurseForge</th></tr>
+<tr><td>Create</td><td>required</td><td><code>create</code> (LNytGWDc)</td><td><code>create</code> (328085)</td></tr>
+</table>
+<p>Not listed: Create: Propulsion (the reason for the mod, but not a dependency).</p>
+
+<h2>Gallery</h2>
+<table>
+<tr><th style="width:30px">#</th><th style="width:300px">File (<code>publishing/screenshots/</code>)</th><th>Caption</th></tr>
+<tr><td>1</td><td><code>blank-pair-dark.png</code> <span class="tag">featured</span></td><td>Blank transmitter (powered) and blank receiver: the lamp stays off</td></tr>
+<tr><td>2</td><td><code>apple-pair-lit.png</code></td><td>Same layout with an apple in both links: works as always</td></tr>
+<tr><td>3</td><td><code>thruster-straight.png</code></td><td>Create: Propulsion vector thruster stays straight next to a powered blank link</td></tr>
+</table>
+<p>If a file is missing, <code>publishing/screenshots/TODO.md</code> says how to take it by hand.</p>
+
+<div class="grid">
+<div>
+<h2>Modrinth steps</h2>
+<ol>
+<li>modrinth.com → sign in with GitHub → Create project → type Mod.</li>
+<li>Fill the shared metadata table. Description = paste <code>publishing/modrinth-description.md</code>.</li>
+<li>Upload icon + gallery images.</li>
+<li>Versions → Create version: jar, number <code>1.0.0</code>, Release, NeoForge, 1.21.1, dependency Create required, changelog from release notes.</li>
+<li>Submit for review. First review takes 1 to 3 days. Project URL becomes modrinth.com/mod/no-blank-links.</li>
+<li>Settings → create a PAT with "Create versions" scope → GitHub repo secret <code>MODRINTH_TOKEN</code>. Until the project is approved, leave the secret unset: the workflow then skips Modrinth.</li>
+</ol>
+</div>
+<div>
+<h2>CurseForge steps</h2>
+<ol>
+<li>curseforge.com → Authors → Start a project → Minecraft → Mods.</li>
+<li>Name, slug <code>no-blank-links</code>, summary, categories, license MIT, icon <code>icon-400.png</code>.</li>
+<li>Description: switch editor to Source/HTML and paste <code>publishing/curseforge-description.html</code>.</li>
+<li>Upload file: jar, display name <code>No Blank Links 1.0.0</code>, Release, 1.21.1 + NeoForge + Java 21, relation Create required.</li>
+<li>Submit. Note the numeric Project ID from the project page sidebar.</li>
+<li>API tokens page → create token → GitHub secrets <code>CURSEFORGE_TOKEN</code> and <code>CURSEFORGE_PROJECT_ID</code>.</li>
+</ol>
+</div>
+</div>
+
+<h2>Repo settings (GitHub)</h2>
+<table>
+<tr><th style="width:200px">State</th><th>Setting</th></tr>
+<tr><td><span class="ok">done</span> (2026-10-24)</td><td>Public repo <code>SenDeliver/create-no-blank-links</code>, <code>tools/github-lockdown.sh</code> run once: squash merge only, delete branch on merge, Actions token read-only, rulesets <code>main: PR only, owner merges</code> and <code>tags: owner only</code>, private vulnerability reporting, secret scanning + push protection. Tag <code>v1.0.0</code> + GitHub Release with the jar.</td></tr>
+<tr><td><span class="tag">manual</span></td><td>Create both projects, add the 3 secrets <code>MODRINTH_TOKEN</code>, <code>CURSEFORGE_TOKEN</code>, <code>CURSEFORGE_PROJECT_ID</code>. Upload 1.0.0 by hand on both sites (the GitHub release already carries the jar, so the workflow skips it).</td></tr>
+</table>
+
+<h2>After listing: releases are automatic</h2>
+<p><code>.github/workflows/publish.yml</code> runs on every GitHub Release: builds the jar, attaches it to the GitHub release and, when the secrets exist, uploads it to CurseForge and Modrinth. Without secrets it only attaches the jar and prints a notice; it never fails for a missing token. Changelog: <code>publishing/release-notes-&lt;version&gt;.md</code> if it exists, else the <code>## [x.y.z]</code> section of CHANGELOG.md. A release that already carries the jar (attached by hand) is skipped; rerun the workflow by hand with the tag to publish it to the sites.</p>
+<pre>git tag v1.0.1 && git push origin main v1.0.1
+gh release create v1.0.1 --title "No Blank Links 1.0.1" --notes-file publishing/release-notes-1.0.1.md</pre>
+
+<h2>Jar naming</h2>
+<p>1.0.0 ships as <code>noblanklinks-1.0.0.jar</code> (already on the server, unchanged). From 1.0.1 the jar can adopt the Octo Arms scheme <code>no-blank-links-&lt;version&gt;+mc1.21.1.jar</code> (set <code>archivesName</code> in <code>build.gradle</code>); the workflow picks up whatever <code>build/libs/</code> contains. Tags may be <code>v1.0.1</code> or <code>v1.0.1+mc1.21.1</code>.</p>
+
+<h2>Pending by you</h2>
+<ul>
+<li><span class="tag">manual</span> create both projects, add the 3 GitHub secrets, upload 1.0.0 by hand.</li>
+<li><span class="tag">nice</span> 1.0.1: the logo (<code>no_blank_links_logo.png</code>, already in source) ships in the jar; optional jar rename.</li>
+</ul>
+</body>
+</html>
