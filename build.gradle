@@ -12,6 +12,13 @@ base {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
+sourceSets {
+    dev {
+        compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+        runtimeClasspath += sourceSets.main.output + sourceSets.main.runtimeClasspath
+    }
+}
+
 repositories {
     maven { url = "https://maven.createmod.net" }
     maven { url = "https://maven.ithundxr.dev/snapshots" }
@@ -22,10 +29,16 @@ neoForge {
 
     runs {
         configureEach {
+            project.properties.each { k, v -> if (k.startsWith('noblanklinks.')) systemProperty k, v.toString() }
             logLevel = org.slf4j.event.Level.INFO
         }
         client {
             client()
+            sourceSet = sourceSets.dev
+            programArguments.addAll '--width', '1600', '--height', '900'
+            if (project.hasProperty('connect')) {
+                programArguments.addAll '--quickPlayMultiplayer', project.property('connect').toString()
+            }
         }
         server {
             server()
@@ -37,6 +50,7 @@ neoForge {
     mods {
         "${mod_id}" {
             sourceSet(sourceSets.main)
+            sourceSet(sourceSets.dev)
         }
     }
 }
