@@ -1,0 +1,18 @@
+# Blank pair: transmitter on a redstone block at x=5, receiver + lamp at x=10 (same key EMPTY/EMPTY)
+forceload add 0 0 32 16
+setblock 5 -61 5 minecraft:redstone_block
+setblock 10 -60 6 minecraft:redstone_lamp
+setblock 5 -60 5 create:redstone_link[facing=up,receiver=false]
+setblock 10 -60 5 create:redstone_link[facing=up,receiver=true]{Transmitter:0b}
+# Apple pair: same layout at x=20 / x=25
+setblock 20 -61 5 minecraft:redstone_block
+setblock 25 -60 6 minecraft:redstone_lamp
+setblock 20 -60 5 create:redstone_link[facing=up,receiver=false]{FrequencyFirst:{id:"minecraft:apple",count:1}}
+setblock 25 -60 5 create:redstone_link[facing=up,receiver=true]{FrequencyFirst:{id:"minecraft:apple",count:1}}
+#sleep 3
+data get block 5 -60 5
+data get block 10 -60 5
+data get block 20 -60 5
+data get block 25 -60 5
+execute if block 10 -60 6 minecraft:redstone_lamp[lit=true]
+execute if block 25 -60 6 minecraft:redstone_lamp[lit=true]
